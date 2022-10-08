@@ -50,6 +50,7 @@ impl Layer {
 
 struct NN {
     layers : Vec<Layer>,
+    n_size : usize,
     eta : f64,
     lambda :f64,
     input_size : usize,
@@ -67,7 +68,7 @@ impl NN {
         }        
     }
 
-    pub fn back_prop(&self, input : &na::DVector<f64>,output : &na::DVector<f64>,nabla_w : &mut na::DMatrix<f64>, nabla_b : &mut na::DMatrix<f64>){
+    pub fn back_prop(&self, input : &na::DVector<f64>,output : &na::DVector<f64>, nabla_w : &mut Vec<&mut na::DMatrix<f64>>, nabla_b : &mut Vec<&mut na::DVector<f64>>){
         let mut activations : Vec<na::DVector<f64>> = vec![];
         let mut zs : Vec<na::DVector<f64>> = vec![];
         let mut z = self.layers[0].pass_through(input);
@@ -80,10 +81,12 @@ impl NN {
             zs.push(z);
         }
 
-        let mut delta = 
+        let mut delta = activations.last().unwrap() - output;
 
-        
+        *nabla_b[self.n_size-1] += &delta;
+        *nabla_w[self.n_size-1]
     }
+
 }
 fn main() {
     let mut a = datamanager::AllData {                                                      
