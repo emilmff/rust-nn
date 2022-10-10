@@ -1,5 +1,6 @@
 pub mod datamanager;
 extern crate nalgebra as na;
+use datamanager::Wine;
 use rand::prelude::*;
 use rand_distr::{Distribution, Normal, NormalError};
 
@@ -22,6 +23,15 @@ fn relu_vec(vec : &na::DVector<f64>) -> na::DVector<f64>{
     let mut out = na::DVector::<f64>::zeros(vec.len());
     for i in 0..out.len(){
         out[i] = relu(vec[i]);
+    }
+    out
+}
+
+fn derivative(vec : &na::DVector<f64>)-> na::DVector<f64> {
+    let mut out = na::DVector::<f64>::zeros(vec.len());
+    for i in 0..out.len(){
+        if vec[i]>0.0f64{out[i]=1.0f64;}
+        else{out[i]=0.0f64;}
     }
     out
 }
@@ -84,8 +94,17 @@ impl NN {
         let mut delta = activations.last().unwrap() - output;
 
         *nabla_b[self.n_size-1] += &delta;
-        *nabla_w[self.n_size-1]
+        *nabla_w[self.n_size-1] += &delta * (&activations[activations.len()-1]).transpose();
+
+        for i in 2..self.n_size{
+            delta = coeff_wise_product(&((&self.layers[self.n_size-i].weights.transpose()) * &delta), &derivative(&zs[self.n_size-1-i]));
+            *nabla_b[self.n_size-1] += &delta;
+            if i == self.n_size {*nabla_w[self.n_size-1] += &delta * input.transpose();}
+            else {*nabla_w[self.n_size-1] += &delta * (&activations[activations.len()-1-i]).transpose();}
+        }
     }
+
+    pub fn update_minibatch(self, batch : Vec<&Wine>,)
 
 }
 fn main() {
