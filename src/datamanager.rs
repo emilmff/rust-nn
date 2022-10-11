@@ -3,8 +3,8 @@ use std::fs::File;
 use std::io::{prelude::*, BufReader};
 
 pub struct Wine {
-    pub features : na::SVector<f64,11>,
-    pub label : na::SVector<f64,10>,
+    pub features : na::DVector<f64>,
+    pub label : na::DVector<f64>,
 }   
 pub struct AllData {
     pub training_data : Vec<Wine>,
@@ -22,8 +22,8 @@ impl AllData{
         for line in reader.lines() {
             if wine_counter > 0 {
                 let mut wine= Wine {
-                    features : na::SVector::<f64,11>::zeros(),
-                    label : na::SVector::<f64,10>::zeros(),
+                    features : na::DVector::<f64>::zeros(11),
+                    label : na::DVector::<f64>::zeros(10),
                 };
                 if let Ok(l) = line{
                     let mut trait_counter = 0;
@@ -31,13 +31,13 @@ impl AllData{
                     for i in l.chars(){
                         if i != ';'{
                             num.push(i);
+                            if trait_counter == 11{
+                                wine.label[(num.to_string()).trim().parse::<usize>().unwrap()] = 1f64;
+                            }
                         }
                         else{
                             if trait_counter <11{
                                 wine.features[trait_counter] = (num.to_string()).trim().parse::<f64>().unwrap();
-                            }
-                            else{
-                                wine.label[(num.to_string()).trim().parse::<usize>().unwrap()] = 1f64;
                             }
                             trait_counter +=1;
                             num = String::from("");
