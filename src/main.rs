@@ -214,6 +214,7 @@ impl NN {
             let performance = score / size;
             print!("performance on epoch {} :  {}",j,performance);
             print!("\n");
+            self.eta *= 0.98
         }
     }
 
@@ -225,10 +226,10 @@ fn main() {
         test_data: vec![],
     };
 
-    let mut network = NN {eta : 0.001, input_size : 11, lambda : 0.1, layers : vec![],n_size : 0, output_size : 10};
+    let mut network = NN {eta : 0.005, input_size : 11, lambda : 0.1, layers : vec![],n_size : 0, output_size : 10};
     a.read_data();
     a.normalize_test_data();
     a.normalize_training_data();
     NN::initialize_layers(&mut network, &[11,100,100,10]);
-    NN::sgd(&mut network, a.training_data,a.test_data,500,5);
+    NN::sgd(&mut network, a.training_data,a.test_data,200,5);
 }

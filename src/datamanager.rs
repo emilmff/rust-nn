@@ -13,7 +13,7 @@ pub struct AllData {
 
 impl AllData{ 
     pub fn read_data(&mut self){
-        let dir : String = String::from("C:/Users/emil9/Downloads/winequality-white.csv");
+        let dir : String = String::from("C:/Users/emil9/Downloads/winequality-red.csv");
         let file = File::open(dir).expect("didnt open");
         let reader = BufReader::new(file);
 
@@ -47,7 +47,7 @@ impl AllData{
                 else{
                     println!(" yo");
                 }
-                if wine_counter < 4200{self.training_data.push(wine)}
+                if wine_counter < 1500{self.training_data.push(wine)}
                 else{self.test_data.push(wine)}
             }
             wine_counter +=1;
