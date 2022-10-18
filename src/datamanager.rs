@@ -45,12 +45,74 @@ impl AllData{
                     }
                 }
                 else{
-                    println!("shits fucked yo");
+                    println!(" yo");
                 }
-                if wine_counter < 4100{self.training_data.push(wine)}
+                if wine_counter < 4200{self.training_data.push(wine)}
                 else{self.test_data.push(wine)}
             }
             wine_counter +=1;
+        }
+    }
+
+    pub fn normalize_training_data(&mut self) {
+        let mut mins: Vec<f64> = vec![];
+        let mut maxs: Vec<f64> = vec![];
+        let len_data = self.training_data.len();
+        let mut v : &na::DVector<f64> = &self.training_data[0].features;
+        let len_features = v.nrows();
+
+        for i in 0..v.nrows(){
+            mins.push(v[i]);
+            maxs.push(v[i]);
+        }
+
+        for i in 1..len_data{
+            v = &self.training_data[i].features;
+
+            for j in 0..len_features{
+                let val = v[j];
+                if val < mins[j] {mins[j]= val;}
+                if val >maxs[j] {maxs[j] = val;}
+            }
+        }
+
+        
+        for i in 0..len_data{
+            for j in 0..len_features{
+                if maxs[j]-mins[j] == 0.0 {self.training_data[i].features[j] = 0.0;}
+                else {self.training_data[i].features[j] =(self.training_data[i].features[j]-mins[j])/(maxs[j]-mins[j])}
+            }
+        }
+    }
+    
+    pub fn normalize_test_data(&mut self){
+        let mut mins: Vec<f64> = vec![];
+        let mut maxs: Vec<f64> = vec![];
+        let len_data = self.test_data.len();
+        let mut v : &na::DVector<f64> = &self.test_data[0].features;
+        let len_features = v.nrows();
+
+        for i in 0..v.nrows(){
+            mins.push(v[i]);
+            maxs.push(v[i]);
+        }
+
+        for i in 1..len_data{
+            v = &self.test_data[i].features;
+
+            for j in 0..len_features{
+                let val = v[j];
+                if val < mins[j] {mins[j]= val;}
+                if val >maxs[j] {maxs[j] = val;}
+            }
+        }
+
+        
+        for i in 0..len_data{
+            for j in 0..len_features{
+                if maxs[j]-mins[j] == 0.0 {self.test_data[i].features[j] = 0.0;}
+                else {self.test_data[i].features[j] =(self.test_data[i].features[j]-mins[j])/(maxs[j]-mins[j])}
+            }
         }
     }
 }

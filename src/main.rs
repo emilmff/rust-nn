@@ -54,6 +54,16 @@ fn max_position(vec : &na::DVector<f64>) -> usize {
     out
 }
 
+fn quadratic_cost(o : &na::DVector<f64>, l : &na::DVector<f64>) -> f64
+{
+    let mut out = 0.0;
+    for i in 0..o.nrows()
+    {
+        out += (1.0/2.0)*(o[i]-l[i])*(o[i]-l[i]);
+    }
+    out
+}
+
 struct Layer {
     weights : na::DMatrix<f64>,
     biases : na::DVector<f64>,
@@ -72,7 +82,7 @@ impl Layer {
             *i = normal_distribution.sample(&mut rng)/f64::sqrt(num_cols as f64);
         } 
         for i in self.biases.iter_mut() {
-            *i = normal_distribution.sample(&mut rng);
+            *i = 0.0;
         }
     }   
 }
@@ -174,7 +184,7 @@ impl NN {
             let pos = max_position(&out);
             let correct = max_position(&wine.label);
             //print!("{},{}",out,wine.label);
-            if pos == correct {score += 1.0}
+            if pos == correct {score += 1.0;}
         }
         score
     }
@@ -217,6 +227,8 @@ fn main() {
 
     let mut network = NN {eta : 0.001, input_size : 11, lambda : 0.1, layers : vec![],n_size : 0, output_size : 10};
     a.read_data();
+    a.normalize_test_data();
+    a.normalize_training_data();
     NN::initialize_layers(&mut network, &[11,100,100,10]);
-    NN::sgd(&mut network, a.training_data,a.test_data,2000,3);
+    NN::sgd(&mut network, a.training_data,a.test_data,500,5);
 }
